@@ -1,0 +1,4 @@
+/Users/nitinruhil/Desktop/A5csc305clone/CG-Summer-2024/Assignment_5/build/CMakeFiles/assignment5.dir
+/Users/nitinruhil/Desktop/A5csc305clone/CG-Summer-2024/Assignment_5/build/CMakeFiles/examples.dir
+/Users/nitinruhil/Desktop/A5csc305clone/CG-Summer-2024/Assignment_5/build/CMakeFiles/edit_cache.dir
+/Users/nitinruhil/Desktop/A5csc305clone/CG-Summer-2024/Assignment_5/build/CMakeFiles/rebuild_cache.dir
