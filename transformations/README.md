@@ -1,50 +1,48 @@
 # Ray Tracing & Shading Module
 
-This module implements a foundational CPU-based ray tracing system with support for geometric primitives, perspective and orthographic projections, and physically-inspired shading models.
+This module implements a CPU-based ray tracing pipeline for basic geometric primitives and physically-inspired shading. It supports both orthographic and perspective cameras and produces rendered images using a Phong lighting model.
 
-It is part of the **Computer Graphics Rendering Framework**, focusing on ray generation, intersection testing, and lighting computation in 3D scenes.
+It is part of the **Computer Graphics Rendering Framework**, focusing on ray generation, intersection testing, and shading in 3D scenes.
 
 ---
 
 ## Features
 
-* Ray–Sphere and Ray–Parallelogram intersection
-* Orthographic and Perspective camera models
-* Primary ray generation
-* Surface normal computation
-* Phong illumination model:
-
-  * Ambient lighting
-  * Diffuse reflection
-  * Specular highlights
-* RGB color shading
-* Eigen-based vector and matrix math
+- Ray–Sphere intersection
+- Ray–Parallelogram intersection
+- Orthographic and Perspective camera models
+- Primary ray generation
+- Surface normal computation
+- Phong illumination model:
+  - Ambient
+  - Diffuse
+  - Specular
+- Eigen-based vector and matrix math
 
 ---
 
-## Rendering Pipeline
+## How It Works
 
-1. **Ray Generation**
-   Rays are generated from the camera using either orthographic or perspective projection.
+1. **Ray Generation**  
+   Rays are generated per pixel from either an orthographic or perspective camera.
 
-2. **Intersection Testing**
-   Rays are tested against analytic geometry (spheres and planes/parallelograms).
+2. **Intersection Testing**  
+   Rays are tested against analytic primitives (spheres and parallelograms). The closest hit is selected.
 
-3. **Surface Shading**
-   Lighting is computed using ambient, diffuse, and specular components.
+3. **Shading**  
+   Surface color is computed using the Phong lighting model with ambient, diffuse, and specular terms.
 
-4. **Image Formation**
-   The closest intersection determines the final pixel color in the rendered image.
+4. **Image Output**  
+   The final RGB result is written as an output image for inspection and comparison.
 
 ---
 
 ## Build & Run
 
 ### Requirements
-
-* C++17 compatible compiler
-* CMake (3.10+)
-* Eigen (included in the project)
+- C++17 compatible compiler (GCC / Clang / MSVC)
+- CMake 3.10+
+- Eigen (included in the repository)
 
 ### Compile
 
@@ -60,47 +58,34 @@ make
 ### Run
 
 ```bash
-./assignment2
+./ray_tracer
 ```
 
-The program will:
-
-* Cast rays into the scene
-* Intersect them with spheres and planes
-* Apply lighting and shading
-* Output rendered images to the project directory
-
----
-
-## Example Outputs
-
-* Orthographic projection of a plane
-* Perspective projection of a plane
-* Shaded sphere with full Phong lighting
-
-Example images can be found in the `img/` folder.
-
----
-
-## Applications
-
-* Ray tracing research and education
-* Lighting model validation
-* Camera and projection system testing
-* Foundations for global illumination engines
-* Graphics pipeline prototyping
+The application will:
+- Render a simple scene using ray casting
+- Apply Phong lighting for shading
+- Save the output image to the project’s output folder (commonly `img/`)
 
 ---
 
 ## Project Structure
 
-* `src/` – Ray generation, intersection, shading, math
-* `data/` – Scene parameters
-* `img/` – Rendered output images
-* `build/` – CMake build artifacts
+- `src/` – Ray generation, intersections, shading, math utilities  
+- `img/` – Rendered output images  
+- `data/` – Scene parameters / inputs (if used)  
+- `build/` – Build artifacts  
+
+---
+
+## Applications
+
+- Ray tracing fundamentals and research  
+- Lighting model validation  
+- Camera model testing  
+- Foundations for advanced rendering systems  
 
 ---
 
 ## Author
 
-Developed as part of a modular **Computer Graphics Rendering System** implementing core ray tracing and shading algorithms.
+Developed as part of a modular **Computer Graphics Rendering Framework** implementing core ray tracing and shading algorithms.
