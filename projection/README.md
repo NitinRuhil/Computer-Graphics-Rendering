@@ -1,52 +1,56 @@
-# Ray Tracing & BVH Acceleration Module
+# BVH Ray Tracer (Triangle Mesh Rendering)
 
-This module implements a physically-based ray tracing pipeline for triangle meshes, including a high-performance acceleration structure based on Axis-Aligned Bounding Box (AABB) Trees (Bounding Volume Hierarchies).
+This module implements a CPU-based ray tracer for triangle meshes and accelerates ray–geometry intersection using a **Bounding Volume Hierarchy (BVH)** built from **Axis-Aligned Bounding Boxes (AABBs)**.
 
-It is part of the **Computer Graphics Rendering Framework**, focusing on realistic image synthesis, spatial data structures, and efficient ray–geometry intersection.
-
----
-
-## Features
-
-* Ray–Triangle intersection (Möller–Trumbore algorithm)
-* Triangle mesh ray tracing
-* Axis-Aligned Bounding Box (AABB) computation
-* Top-Down BVH (Bounding Volume Hierarchy) construction
-* Fast ray traversal using hierarchical spatial partitioning
-* Support for large 3D meshes (Bunny, Dragon, etc.)
-* Eigen-based vector and matrix math
+It is part of the **Computer Graphics Rendering Framework**, focused on fast spatial queries and realistic image synthesis for complex 3D models.
 
 ---
 
-## Architecture
+## Key Features
 
-### Ray–Triangle Intersection
+- Ray–Triangle intersection (barycentric / Möller–Trumbore style)
+- Triangle mesh ray tracing (OBJ-based scenes)
+- AABB computation for primitives and BVH nodes
+- Top-down BVH construction (binary tree)
+- Fast BVH traversal for nearest-hit intersection
+- Designed for large meshes (e.g., Bunny, Dragon)
+- Eigen-based vector and matrix math
 
-Each ray is tested against mesh triangles using barycentric coordinates to compute hit distance, surface normal, and visibility.
+---
 
-### Bounding Volume Hierarchy (BVH)
+## How It Works
 
-A binary AABB Tree is built using a top-down strategy:
+### 1) Ray–Triangle Intersection
+Each ray is tested against triangles using barycentric coordinates to compute hit distance, intersection point, and surface normal.
 
-1. Compute triangle centroids
-2. Find the longest axis of the bounding box
-3. Sort primitives along this axis
-4. Recursively split into two balanced subsets
-5. Store merged bounding boxes in internal nodes
+### 2) BVH Construction
+A binary BVH is built in a top-down manner:
 
-This reduces intersection complexity from **O(N)** to approximately **O(log N)** per ray.
+1. Compute triangle centroids  
+2. Choose the longest axis of the current bounds  
+3. Sort primitives along that axis  
+4. Split into two subsets  
+5. Recursively build child nodes and store merged AABBs  
+
+This reduces intersection time from **O(N)** per ray to roughly **O(log N)** on average.
+
+### 3) BVH Traversal
+During rendering, rays traverse the BVH:
+- If the ray misses a node’s AABB, that subtree is skipped  
+- If it hits, traversal continues until leaf triangles are tested  
 
 ---
 
 ## Build & Run
 
 ### Requirements
-
-* C++17
-* CMake
-* Eigen (included in the project)
+- C++17 compatible compiler  
+- CMake 3.10+  
+- Eigen (included in the repository)
 
 ### Compile
+
+From the `projection` directory:
 
 ```bash
 mkdir build
@@ -58,37 +62,37 @@ make
 ### Run
 
 ```bash
-./assignment4
+./bvh_raytracer
 ```
 
-The program will render the scene and generate an output image in the build directory.
+The application will:
+- Load a triangle mesh scene (from `data/`)  
+- Build a BVH acceleration structure  
+- Render the scene using ray tracing  
+- Save the output image to the module’s output folder (commonly `img/` or the build directory)
 
-Release mode is strongly recommended, as BVH acceleration provides speedups of 200× or more compared to brute-force ray tracing.
+> Tip: Use **Release** mode for best performance—BVH speedups are most noticeable on large meshes.
 
 ---
 
-## Rendering Output
+## Project Structure
 
-Example scenes included:
-
-* Stanford Bunny
-* Stanford Dragon
-
-BVH acceleration allows complex models to be rendered efficiently with correct shading and visibility.
+- `src/` – Ray tracing, BVH build/traversal, intersection routines  
+- `data/` – Input meshes / scenes  
+- `img/` – Rendered output images  
+- `build/` – Build artifacts  
 
 ---
 
 ## Applications
 
-* Offline rendering engines
-* Real-time ray tracing research
-* Collision detection
-* Visibility and occlusion queries
-* Simulation and physics engines
-* Spatial data structure benchmarking
+- Offline rendering engines  
+- BVH/spatial data structure benchmarking  
+- Collision detection and visibility queries  
+- Graphics research and prototyping  
 
 ---
 
 ## Author
 
-Developed as part of a modular **Computer Graphics Rendering System** focusing on geometric computation, acceleration structures, and physically-based rendering.
+Developed as part of the modular **Comp
