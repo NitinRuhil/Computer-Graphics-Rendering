@@ -1,110 +1,94 @@
-Ray Tracing: Triangle Meshes and AABB Trees
-===========================================
+# Ray Tracing & BVH Acceleration Module
 
-The goal of this assignment is to implement ray tracing for a triangle mesh, and implement acceleration structures to make the computation faster.
+This module implements a physically-based ray tracing pipeline for triangle meshes, including a high-performance acceleration structure based on Axis-Aligned Bounding Box (AABB) Trees (Bounding Volume Hierarchies).
 
-### Using Eigen
+It is part of the **Computer Graphics Rendering Framework**, focusing on realistic image synthesis, spatial data structures, and efficient ray–geometry intersection.
 
-In all exercises you will need to do operations with vectors and matrices. To simplify the code, you will use [Eigen](http://eigen.tuxfamily.org/).
-Have a look at the [Getting Started](http://eigen.tuxfamily.org/dox/GettingStarted.html) page of Eigen as well as the [Quick Reference](http://eigen.tuxfamily.org/dox/group__QuickRefPage.html}) page for a reference of the basic matrix operations supported.
+---
 
-### Preparing the Environment
+## Features
 
-Follow instructions the [general rules](../RULES.md) to setup what you need for the assignment.
+* Ray–Triangle intersection (Möller–Trumbore algorithm)
+* Triangle mesh ray tracing
+* Axis-Aligned Bounding Box (AABB) computation
+* Top-Down BVH (Bounding Volume Hierarchy) construction
+* Fast ray traversal using hierarchical spatial partitioning
+* Support for large 3D meshes (Bunny, Dragon, etc.)
+* Eigen-based vector and matrix math
 
+---
 
-Ex.1: Triangle Mesh Ray Tracing [10pt]
--------------------------------
+## Architecture
 
-In this exercise you will implement the ray-tracing of a triangle mesh. Without an acceleration structure such as a BVH, it will be very slow, so make sure you compile in release mode (`cmake -DCMAKE_BUILD_TYPE=Release ..`), otherwise things will be very slow.
+### Ray–Triangle Intersection
 
-### Tasks
+Each ray is tested against mesh triangles using barycentric coordinates to compute hit distance, surface normal, and visibility.
 
-1. Fill the starting code to complete the function implementing the intersection of a ray and a triangle. This should be similar to the code you developed for Assignment 2.
-2. Fill the starting code to implement the ray-tracing of a triangle mesh.
-3. Implement the `find_nearest_object` function and remember to return a **boolean** and not the index of the closest triangle.
-4. Implement the correct `image_y` and `image_x`.
+### Bounding Volume Hierarchy (BVH)
 
-Ex.2: AABB Trees [20pt]
-----------------
+A binary AABB Tree is built using a top-down strategy:
 
-In this exercise you will implement an acceleration structure to speed-up the rendering of an image via ray-tracing. When compiling in release mode, you will typically achieve a speedup of 200x to 500x compared to the version without any acceleration structure.
+1. Compute triangle centroids
+2. Find the longest axis of the bounding box
+3. Sort primitives along this axis
+4. Recursively split into two balanced subsets
+5. Store merged bounding boxes in internal nodes
 
-The data structure we will study in this exercise in the AABB Tree, which is a special type of Bounding Volume Hierarchy (BVH), where each node of the tree is associated to the bounding box of its content. More specifically, each leaf nodes contains a single triangle, and stores a box which is the bounding box of this single triangle. Each internal node will have two children (for the sake of simplicity), and stores a box which corresponds to the union of the two boxes stored in its child nodes.
+This reduces intersection complexity from **O(N)** to approximately **O(log N)** per ray.
 
-We propose to implement a top-down approach to build an AABB Tree for triangles.
+---
 
-![](img/bvh.png?raw=true)
+## Build & Run
 
-### Top-Down Construction
+### Requirements
 
-In this approach, the input triangles are split into groups of roughly equal size starting from the top node. This can be described as a recursive function that does the following:
+* C++17
+* CMake
+* Eigen (included in the project)
 
-1. Split the input set of triangles into two sets S1 and S2.
-2. Recursively build the subtree T1 corresponding to S1.
-3. Recursively build the subtree T2 corresponding to S2.
-4. Update the box of the current node by merging boxes of the root of T1 and T2.
-5. Return the new root node R.
+### Compile
 
-##### Sorting Criteria
-
-We need a criterion to split the set of input triangles S into two subsets S1 and S2. We propose to simply sort the input triangles based on the coordinate of their centroid along the longest axis of the box spanned by those centroids. Then, S1 will hold the left half (rounded up), and S2 will hold the right half (rounded down).
-
-### Tasks
-
-1. Implement the intersection test of a ray and an axis-aligned bounding box. This test should be very simple. In particular, there should be no need to solve any linear system here.
-2. Implement the top-down construction method described above.
-3. Update the intersection code of a ray and a mesh to use this newly created BVH. In particular, now you should only need to test the intersection for leaf nodes whose bounding box also intersects the input ray.
-
-Starting Code
--------------
-
-After compiling the code following the process described in the [general instructions](../RULES.md), you can launch the program from command-line as follows:
-
+```bash
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make
 ```
-mkdir build; cd build; cmake ..; make
+
+### Run
+
+```bash
 ./assignment4
 ```
-Once you complete the assignment, you should see a picture generated in your folder.
 
-Running the completed code should give you the following result:
+The program will render the scene and generate an output image in the build directory.
 
-![](img/bunny.png?raw=true)
+Release mode is strongly recommended, as BVH acceleration provides speedups of 200× or more compared to brute-force ray tracing.
 
-Once you have implemented an acceleration structure, you should be able to render more complex objects in a few seconds, such as this dragon (WARNING the dragon in the data folder is zipped, unzip it first):
+---
 
-![](img/dragon.png?raw=true)
+## Rendering Output
 
-NB: To visualize the input 3D models, it is suggested to use a software such as [Meshlab](http://www.meshlab.net/).
+Example scenes included:
 
-Deliverables
--------------
+* Stanford Bunny
+* Stanford Dragon
 
-Submit your `main.cpp`.
+BVH acceleration allows complex models to be rendered efficiently with correct shading and visibility.
 
+---
 
-References
-----------
+## Applications
 
-If you are interested in reading more about other acceleration structures, you can have a look at the following references:
+* Offline rendering engines
+* Real-time ray tracing research
+* Collision detection
+* Visibility and occlusion queries
+* Simulation and physics engines
+* Spatial data structure benchmarking
 
-- Wald, Ingo, and Vlastimil Havran. *On building fast kd-trees for ray tracing, and on doing that in O (N log N).* 2006 IEEE Symposium on Interactive Ray Tracing. https://doi.org/10.1109/RT.2006.280216
+---
 
-- Samet, Hanan. *Foundations of multidimensional and metric data structures*. Morgan Kaufmann, 2006. ISBN-13 978-0123694461
+## Author
 
-
-Bonus 1 [5pt]
---------
-
-Modify the code to include spheres and parallelograms. You can use the scene setup and code from Assignment 4.
-
-
-Bonus 2 [5pt]
---------
-
-Modify the code to include shadows. You can use the code from Assignment 4.
-
-Bonus 3 [5pt]
---------
-
-Modify the code to include reflections. You can use the code from Assignment 4.
+Developed as part of a modular **Computer Graphics Rendering System** focusing on geometric computation, acceleration structures, and physically-based rendering.
