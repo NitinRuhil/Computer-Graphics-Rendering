@@ -1,112 +1,98 @@
-# Core Geometry Engine – Point-in-Polygon & Spatial Processing
+# BVH Ray Tracer (Triangle Mesh Rendering)
 
-This module is part of the **Computer Graphics Rendering System** and focuses on fundamental 2D geometric operations used in rendering pipelines, spatial analysis, and visualization systems.
+This module implements a CPU-based ray tracer for triangle meshes and accelerates ray–geometry intersection using a **Bounding Volume Hierarchy (BVH)** built from **Axis-Aligned Bounding Boxes (AABBs)**.
 
-The project implements a complete workflow for reading geometric data, processing polygon boundaries, and performing efficient point-in-polygon queries using computational geometry techniques.
-
----
-
-## Project Overview
-
-This component provides:
-
-* Loading and saving 2D point clouds from `.xyz` files
-* Parsing polygon geometry from Wavefront `.obj` format
-* Bounding box computation for spatial acceleration
-* Robust segment–segment intersection testing
-* Point-in-Polygon classification using the Even–Odd Rule
-* Visualization-ready outputs for validation and analysis
-
-These algorithms are commonly used in:
-
-* Computer graphics pipelines
-* GIS and spatial analytics
-* Collision detection
-* Mesh processing
-* Rendering and visibility testing
+It is part of the **Computer Graphics Rendering Framework**, focused on fast spatial queries and realistic image synthesis for complex 3D models.
 
 ---
 
-## Input Formats
+## Key Features
 
-### Point Cloud (.xyz)
+- Ray–Triangle intersection (barycentric / Möller–Trumbore style)
+- Triangle mesh ray tracing (OBJ-based scenes)
+- AABB computation for primitives and BVH nodes
+- Top-down BVH construction (binary tree)
+- Fast BVH traversal for nearest-hit intersection
+- Designed for large meshes (e.g., Bunny, Dragon)
+- Eigen-based vector and matrix math
 
-```
-N
-x y z
-x y z
-...
-```
+---
 
-Only the x and y coordinates are used for 2D computation.
+## How It Works
 
-### Polygon (.obj)
+### 1) Ray–Triangle Intersection
+Each ray is tested against triangles using barycentric coordinates to compute hit distance, intersection point, and surface normal.
 
-```
-v x y z
-v x y z
-...
+### 2) BVH Construction
+A binary BVH is built in a top-down manner:
 
-l i j
-l j k
-...
-```
+1. Compute triangle centroids  
+2. Choose the longest axis of the current bounds  
+3. Sort primitives along that axis  
+4. Split into two subsets  
+5. Recursively build child nodes and store merged AABBs  
 
-Vertices define polygon points, and line segments define polygon edges.
+This reduces intersection time from **O(N)** per ray to roughly **O(log N)** on average.
+
+### 3) BVH Traversal
+During rendering, rays traverse the BVH:
+- If the ray misses a node’s AABB, that subtree is skipped  
+- If it hits, traversal continues until leaf triangles are tested  
 
 ---
 
 ## Build & Run
 
+### Requirements
+- C++17 compatible compiler  
+- CMake 3.10+  
+- Eigen (included in the repository)
+
+### Compile
+
+From the `projection` directory:
+
 ```bash
 mkdir build
 cd build
-cmake ..
+cmake -DCMAKE_BUILD_TYPE=Release ..
 make
-./assignment1
 ```
 
----
+### Run
 
-## Core Algorithms
+```bash
+./bvh_raytracer
+```
 
-### 1. Bounding Box Generation
+The application will:
+- Load a triangle mesh scene (from `data/`)  
+- Build a BVH acceleration structure  
+- Render the scene using ray tracing  
+- Save the output image to the module’s output folder (commonly `img/` or the build directory)
 
-Computes a tight axis-aligned bounding box to identify an external reference point.
-
-### 2. Segment Intersection
-
-Detects intersections between query rays and polygon edges with numerical stability.
-
-### 3. Point-In-Polygon Test
-
-Implements the Even–Odd Rule by casting a ray from the query point and counting edge intersections.
+> Tip: Use **Release** mode for best performance—BVH speedups are most noticeable on large meshes.
 
 ---
 
-## Visualization
+## Project Structure
 
-The system highlights:
-
-* Input point cloud (green)
-* Polygon boundary (red)
-* Points inside polygon (yellow)
-
-This enables fast verification of spatial classification accuracy.
+- `src/` – Ray tracing, BVH build/traversal, intersection routines  
+- `data/` – Input meshes / scenes  
+- `img/` – Rendered output images  
+- `build/` – Build artifacts  
 
 ---
 
 ## Applications
 
-* Rendering pipelines
-* Hit-testing in 2D engines
-* Geospatial containment queries
-* Simulation boundary checks
-* Computational geometry research
+- Offline rendering engines  
+- BVH/spatial data structure benchmarking  
+- Collision detection and visibility queries  
+- Graphics research and prototyping  
 
 ---
 
 ## Author
 
-Developed as part of a larger **Computer Graphics Rendering Framework** focusing on geometric foundations for real-time and offline visualization systems.
-
+Developed as part of the modular **Computer Graphics Rendering Framework** focused on geometric computation, acceleration structures, and physically-based rendering.
