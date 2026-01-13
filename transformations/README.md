@@ -1,86 +1,106 @@
-Introduction to Raytracing and Shading
-======================================
+# Ray Tracing & Shading Module
 
-This assignment aims to implement your first ray tracer and get familiar with different shading.
-In the first exercise, you will implement a raytracer to render spheres and planes with different projections.
-In the second exercise, you will extend the ray tracer to support different shading.
+This module implements a foundational CPU-based ray tracing system with support for geometric primitives, perspective and orthographic projections, and physically-inspired shading models.
 
-### Using Eigen
+It is part of the **Computer Graphics Rendering Framework**, focusing on ray generation, intersection testing, and lighting computation in 3D scenes.
 
-You will need to do operations with vectors and matrices in all exercises. To simplify the code, you will use [Eigen](http://eigen.tuxfamily.org/).
-Have a look at the [Getting Started](http://eigen.tuxfamily.org/dox/GettingStarted.html) page of Eigen as well as the [Quick Reference](http://eigen.tuxfamily.org/dox/group__QuickRefPage.html) page for a reference of the basic matrix operations supported.
+---
 
-### Preparing the Environment and Submission
+## Features
 
-Follow the instructions on the [general instructions page](../Rules.md) to set up what you need for the assignment.
+* Ray–Sphere and Ray–Parallelogram intersection
+* Orthographic and Perspective camera models
+* Primary ray generation
+* Surface normal computation
+* Phong illumination model:
 
-Ex.1: Basic Ray Tracing [16pt]
------------------------
+  * Ambient lighting
+  * Diffuse reflection
+  * Specular highlights
+* RGB color shading
+* Eigen-based vector and matrix math
 
-### Description
+---
 
-In this exercise, you will modify the provided code to launch primary rays from the camera following a perspective projection model and implement the intersection with a parallelogram.
+## Rendering Pipeline
 
-### Tasks
+1. **Ray Generation**
+   Rays are generated from the camera using either orthographic or perspective projection.
 
-Each `TODO` in the provided code corresponds to a part that you need to fill to complete the assignment.
+2. **Intersection Testing**
+   Rays are tested against analytic geometry (spheres and planes/parallelograms).
 
-#### Ray Tracing a Parallelogram [8pt]
+3. **Surface Shading**
+   Lighting is computed using ambient, diffuse, and specular components.
 
-1. Set up the parameters of the parallelogram (position of the corner, plus one vector for each side of the parallelogram)
-2. Create a function to check if a ray intersects with an arbitrary parallelogram.
-3. Calculate the intersection between the ray and the parallelogram using the function defined above.
-4. Compute the normal of that intersection point.
+4. **Image Formation**
+   The closest intersection determines the final pixel color in the rendered image.
 
+---
 
+## Build & Run
 
-#### Ray Tracing with Perspective Projection [8pt]
+### Requirements
 
-5. Modify the ray-sphere intersection to follow the generic case we saw in class.
-6. Modify the ray equation for perspective projection.
+* C++17 compatible compiler
+* CMake (3.10+)
+* Eigen (included in the project)
 
+### Compile
 
-Ex.2: Shading [10pt]
--------------
+From the `transformations` directory:
 
-### Description
-
-In this second exercise, you will implement the shading equations introduced in class.
-
-### Tasks
-
-1. Implement the basic shading components discussed in class: ambient, specular, and diffuse.
-2. Add RGB components instead of the current grey-scale one.
-3. Experiment with the different parameters and observe their effect on the ray-traced shapes.
-
-
-Starting Code
--------------
-
-After compiling the code following the process described in the [general instructions page](../Rules.md), you can launch the program from the command-line as follows:
-
+```bash
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make
 ```
-mkdir build; cd build; cmake ..; make
+
+### Run
+
+```bash
 ./assignment2
 ```
 
-Once you complete the assignment, you should see the result pictures generated in your folder.
+The program will:
 
-If you run the code provided in this assignment, it should produce the following image in your current working directory:
+* Cast rays into the scene
+* Intersect them with spheres and planes
+* Apply lighting and shading
+* Output rendered images to the project directory
 
-![](img/sphere.png?raw=true)
+---
 
-Tip: if you are using VSCode you can open the png in a tab, and it will automatically refresh every time the png is updated.
+## Example Outputs
 
+* Orthographic projection of a plane
+* Perspective projection of a plane
+* Shaded sphere with full Phong lighting
 
-Sample output
--------------
+Example images can be found in the `img/` folder.
 
-Using the provided parameters, the parallelogram with orthographic projection should look like this
-![](img/plane_orthographic.png)
+---
 
-Using the provided parameters, the parallelogram with perspective projection should look like this
-![](img/plane_perspective.png)
+## Applications
 
-Using the provided parameters, the sphere with perspective projection and colors should look like this
-![](img/shading.png)
+* Ray tracing research and education
+* Lighting model validation
+* Camera and projection system testing
+* Foundations for global illumination engines
+* Graphics pipeline prototyping
+
+---
+
+## Project Structure
+
+* `src/` – Ray generation, intersection, shading, math
+* `data/` – Scene parameters
+* `img/` – Rendered output images
+* `build/` – CMake build artifacts
+
+---
+
+## Author
+
+Developed as part of a modular **Computer Graphics Rendering System** implementing core ray tracing and shading algorithms.
