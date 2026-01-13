@@ -63,7 +63,6 @@ This project demonstrates skills in:
 * Rendering pipeline understanding
 * Performance-aware C/C++ coding
 * Visualization and simulation design
-
 ---
 
 ## Purpose
