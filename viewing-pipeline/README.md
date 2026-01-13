@@ -1,147 +1,343 @@
-Basic Raytracing Effects
-========================
+# Advanced Ray Tracing & Viewing Pipeline
 
-The goal of this assignment is to implement basic ray tracing effects such as shadows, reflection, refraction and depth of field.
+This module implements advanced ray tracing effects and camera models, including shadows, reflections, refractions, depth of field, and procedural textures. It extends the basic ray tracer with physically inspired light transport and viewing effects.
 
-### Using Eigen
+It is part of the **Computer Graphics Rendering Framework**, focusing on the viewing pipeline and secondary ray generation for realistic image synthesis.
 
-In all exercises, you will need to do operations with vectors and matrices. To simplify the code, you will use [Eigen](http://eigen.tuxfamily.org/).
-Have a look at the [Getting Started](http://eigen.tuxfamily.org/dox/GettingStarted.html) page of Eigen as well as the [Quick Reference](http://eigen.tuxfamily.org/dox/group__QuickRefPage.html}) page for a reference of the basic matrix operations supported.
+---
 
-### Preparing the Environment
+## Features
 
-Follow instructions the general rules to setup what you need for the assignment.
+- Perspective and orthographic cameras
+- Field-of-view and focal length control
+- Shadow ray casting
+- Phong illumination model (ambient, diffuse, specular)
+- Recursive reflection rays
+- Refraction using Snell’s Law
+- Depth of Field (aperture sampling)
+- Procedural textures using Perlin Noise
+- Ray–Sphere and Ray–Plane intersection
+- Eigen-based linear algebra
 
-### Submission
+---
 
-Please refer to general rules for more details on what to hand in.
+## Rendering Pipeline
 
-Ex 0: Implement the intersection code [5pt]
-------------------------------------------
+1. **Primary Ray Generation**  
+   Rays are generated from the camera based on projection and field-of-view.
 
-Fill the functions `ray_sphere_intersection` and `ray_parallelogram_intersection` with the correct intersection between the ray and the primitives.
+2. **Visibility & Shadows**  
+   Shadow rays determine light occlusion.
 
-Output with sphere intersection
-![](img/sphere.png)
+3. **Lighting & Shading**  
+   Phong lighting with diffuse and specular components.
 
-Output with sphere and plane intersection
-![](img/sphere-plane.png)
+4. **Recursive Effects**  
+   - Reflection rays  
+   - Refraction rays  
+   - Limited bounce depth for performance  
 
+5. **Camera Effects**  
+   - Perspective projection  
+   - Depth of field via aperture sampling  
 
-Ex 1: Field of View and Perspective Camera [5pt]
-------------------------------------------
+6. **Procedural Texturing**  
+   - Perlin noise with linear and cubic interpolation  
 
-![](img/fov.png?raw=true)
+---
 
-The field of view of a perspective camera represents the angle formed between the camera's center and the sensor (aka the pixel grid through which rays are shot). The focal length is the distance between the camera center and the sensor and is called `f` in the figure above.
+## Build & Run
 
-1. Fill the starter code to compute the correct value of `h` (`image_y` in the code). You can use the [Law of Sines](https://en.wikipedia.org/wiki/Law_of_sines) or the trigonometric circle.
-2. Implement the perspective camera similarly to Assignment 1.
+### Requirements
+- C++17 compatible compiler  
+- CMake 3.10+  
+- Eigen (included in the repository)
 
+### Compile
 
-Output with correct `image_x` and `image_y`
-![](img/fov-res.png)
+From the `viewing-pipeline` directory:
 
-Output with correct `image_x` and `image_y` and perspective camera (remember to change `is_perspective` to `true`)
-![](img/prespective.png)
-
-
-Ex.2: Shadow Rays [10pt]
------------------
-
-To determine if a point is in the shadow of another or not, you must cast a ray from this point to the different light sources in the scene. If another object lies in between the point and the light source, then this light does not contribute to the point's color.
-
-### Tasks
-
-1. Implement the Phong shading (diffuse and specular color)
-2. Fill in the starter code to implement shadow rays by implementing the function `is_light_visible`.
-
-Output with correct shading
-![](img/phong.png)
-
-Output with shadows
-![](img/shadow.png)
-
-
-Ex.3: Reflection [10pt]
------------------------
-
-
-To render mirrors, shading must also consider objects that could be reflected by the camera (primary) rays. This can be achieved by shooting new rays from the hit position to the scene with a new direction.
-
-The direction of the reflected has been given in class and can be expressed as `r = 2n(n·v)-v`.
-
-### Tasks
-
-1. Fill the starter code to implement reflected rays. Don't forget to decrease the counter to limit the maximum number of 'bounce' a ray can make.
-
-Output with reflections
-![](img/reflections.png)
-
-
-Ex.4: Perlin Noise [10pt]
--------------------------
-
-Implement the Perlin noise as explained in class.
-
-### Tasks
-
-1. Implement the linear interpolation
-2. Implement the `dotGridGradient` function
-3. Get the correct grid coordinates from the point `x` and `y`
-4. Replace the linear interpolation with a cubic interpolation `(a1 - a0) * (3.0 - w * 2.0) * w * w + a0` and compare the results.
-
-
-Output with linear interpolation
-![](img/perlin-lin.png)
-
-Output with cubic interpolation
-![](img/perlin-cub.png)
-
-Starting Code
--------------
-
-After compiling the code following the process described in the general instructions, you can launch the program from command-line as follows:
-
+```bash
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make
 ```
-mkdir build; cd build; cmake ..; make
+
+### Run
+
+```bash
 ./assignment3
 ```
-Once you complete the assignment, you should see the result as a picture generated in your folder.
 
+The program will:
+- Cast primary and secondary rays  
+- Compute shadows, reflections, and refractions  
+- Apply depth of field and procedural textures  
+- Output the rendered image to the current directory  
 
-After implementing the perspective camera, specular highlights, shadows, reflections, and Perlin noise, the result of your code should be like this:
+---
 
-![](img/result.png)
+## Example Outputs
 
+The engine can generate:
 
-Bonus.1: Depth of Field [10pt]
-------------------------------
+- Shadowed scenes with Phong lighting  
+- Reflective and refractive objects  
+- Depth of field blur  
+- Procedural Perlin noise textures  
 
-![](img/dof.png?raw=true)
+Sample results are available in the `img/` folder.
 
-A basic depth of field effect can be achieved in our simplified camera model. Instead of only one ray per pixel, one can shoot several rays per pixel as illustrated by the figure above. In practice, this means the hole of our camera no longer has an infinitesimal size, a parameter known as the aperture in real-world cameras.
+---
 
-Here, the focal plane of our camera corresponds to our pixel grid (which we have put at a distance `f` from the camera center). This means that object A, which is close to the focal plane, will appear sharper than object B, which is more distant.
+## Applications
 
-To implement a depth of field effect, you will need to average the contribution of several rays per pixel, sampled randomly as suggested in the picture.
+- Physically based rendering research  
+- Ray tracing engine development  
+- Camera model simulation  
+- Optical effects experimentation  
+- Foundations for global illumination systems  
 
-### Tasks
+---
 
-1. Fill in the starter code to implement depth of field.
-2. Modify the input scene to move the rightmost sphere more into focus. Experiment with different settings of this effect.
+## Project Structure
 
+- `src/` – Ray generation, shading, recursion, camera models  
+- `img/` – Rendered outputs  
+- `build/` – CMake build artifacts  
+- `data/` – Scene configuration  
 
-Bonus.2: Refractions [15pt]
-------------------------------
-To render translucent objects, shading must also consider objects that could be seen through the surface hit by the camera (primary) rays. This can be achieved by shooting new rays from the hit position to the scene with a new refracted direction.
+---
 
-![](img/refraction.png?raw=true)
-(Figure: [Wojciech Jarosz](https://canvas.dartmouth.edu/courses/16840))
+## Author
 
-The direction of the refracted ray can be derived from the Snell-Descartes law indicated on the figure.
+Developed as part of a modular **Computer Graphics Rendering System** implementing advanced viewing and light transport effects.# Advanced Ray Tracing & Viewing Pipeline
 
-### Tasks
+This module implements advanced ray tracing effects and camera models, including shadows, reflections, refractions, depth of field, and procedural textures. It extends the basic ray tracer with physically inspired light transport and viewing effects.
 
-1. Derive the formula for the direction of the refracted ray based on the Snell-Descartes law.
-2. Implement the refraction color while being sure to check for total internal reflection (there may be no refracted ray if the incident direction is too low).
+It is part of the **Computer Graphics Rendering Framework**, focusing on the viewing pipeline and secondary ray generation for realistic image synthesis.
+
+---
+
+## Features
+
+- Perspective and orthographic cameras
+- Field-of-view and focal length control
+- Shadow ray casting
+- Phong illumination model (ambient, diffuse, specular)
+- Recursive reflection rays
+- Refraction using Snell’s Law
+- Depth of Field (aperture sampling)
+- Procedural textures using Perlin Noise
+- Ray–Sphere and Ray–Plane intersection
+- Eigen-based linear algebra
+
+---
+
+## Rendering Pipeline
+
+1. **Primary Ray Generation**  
+   Rays are generated from the camera based on projection and field-of-view.
+
+2. **Visibility & Shadows**  
+   Shadow rays determine light occlusion.
+
+3. **Lighting & Shading**  
+   Phong lighting with diffuse and specular components.
+
+4. **Recursive Effects**  
+   - Reflection rays  
+   - Refraction rays  
+   - Limited bounce depth for performance  
+
+5. **Camera Effects**  
+   - Perspective projection  
+   - Depth of field via aperture sampling  
+
+6. **Procedural Texturing**  
+   - Perlin noise with linear and cubic interpolation  
+
+---
+
+## Build & Run
+
+### Requirements
+- C++17 compatible compiler  
+- CMake 3.10+  
+- Eigen (included in the repository)
+
+### Compile
+
+From the `viewing-pipeline` directory:
+
+```bash
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make
+```
+
+### Run
+
+```bash
+./assignment3
+```
+
+The program will:
+- Cast primary and secondary rays  
+- Compute shadows, reflections, and refractions  
+- Apply depth of field and procedural textures  
+- Output the rendered image to the current directory  
+
+---
+
+## Example Outputs
+
+The engine can generate:
+
+- Shadowed scenes with Phong lighting  
+- Reflective and refractive objects  
+- Depth of field blur  
+- Procedural Perlin noise textures  
+
+Sample results are available in the `img/` folder.
+
+---
+
+## Applications
+
+- Physically based rendering research  
+- Ray tracing engine development  
+- Camera model simulation  
+- Optical effects experimentation  
+- Foundations for global illumination systems  
+
+---
+
+## Project Structure
+
+- `src/` – Ray generation, shading, recursion, camera models  
+- `img/` – Rendered outputs  
+- `build/` – CMake build artifacts  
+- `data/` – Scene configuration  
+
+---
+
+## Author
+
+Developed as part of a modular **Computer Graphics Rendering System** implementing advanced viewing and light transport effects.# Advanced Ray Tracing & Viewing Pipeline
+
+This module implements advanced ray tracing effects and camera models, including shadows, reflections, refractions, depth of field, and procedural textures. It extends the basic ray tracer with physically inspired light transport and viewing effects.
+
+It is part of the **Computer Graphics Rendering Framework**, focusing on the viewing pipeline and secondary ray generation for realistic image synthesis.
+
+---
+
+## Features
+
+- Perspective and orthographic cameras
+- Field-of-view and focal length control
+- Shadow ray casting
+- Phong illumination model (ambient, diffuse, specular)
+- Recursive reflection rays
+- Refraction using Snell’s Law
+- Depth of Field (aperture sampling)
+- Procedural textures using Perlin Noise
+- Ray–Sphere and Ray–Plane intersection
+- Eigen-based linear algebra
+
+---
+
+## Rendering Pipeline
+
+1. **Primary Ray Generation**  
+   Rays are generated from the camera based on projection and field-of-view.
+
+2. **Visibility & Shadows**  
+   Shadow rays determine light occlusion.
+
+3. **Lighting & Shading**  
+   Phong lighting with diffuse and specular components.
+
+4. **Recursive Effects**  
+   - Reflection rays  
+   - Refraction rays  
+   - Limited bounce depth for performance  
+
+5. **Camera Effects**  
+   - Perspective projection  
+   - Depth of field via aperture sampling  
+
+6. **Procedural Texturing**  
+   - Perlin noise with linear and cubic interpolation  
+
+---
+
+## Build & Run
+
+### Requirements
+- C++17 compatible compiler  
+- CMake 3.10+  
+- Eigen (included in the repository)
+
+### Compile
+
+From the `viewing-pipeline` directory:
+
+```bash
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make
+```
+
+### Run
+
+```bash
+./assignment3
+```
+
+The program will:
+- Cast primary and secondary rays  
+- Compute shadows, reflections, and refractions  
+- Apply depth of field and procedural textures  
+- Output the rendered image to the current directory  
+
+---
+
+## Example Outputs
+
+The engine can generate:
+
+- Shadowed scenes with Phong lighting  
+- Reflective and refractive objects  
+- Depth of field blur  
+- Procedural Perlin noise textures  
+
+Sample results are available in the `img/` folder.
+
+---
+
+## Applications
+
+- Physically based rendering research  
+- Ray tracing engine development  
+- Camera model simulation  
+- Optical effects experimentation  
+- Foundations for global illumination systems  
+
+---
+
+## Project Structure
+
+- `src/` – Ray generation, shading, recursion, camera models  
+- `img/` – Rendered outputs  
+- `build/` – CMake build artifacts  
+- `data/` – Scene configuration  
+
+---
+
+## Author
+
+Developed as part of a modular **Computer Graphics Rendering System** implementing advanced viewing and light transport effects.
