@@ -1,78 +1,112 @@
-Introduction to C++ and Basic Geometry
-======================================
+# Core Geometry Engine – Point-in-Polygon & Spatial Processing
 
-The goal of this first assignment is to get familiar with CMake and C++ by implementing two basic algorithms in geometry.
-In the exercise, you will implement a function to test whether a point is inside a polygon in 2D.
+This module is part of the **Computer Graphics Rendering System** and focuses on fundamental 2D geometric operations used in rendering pipelines, spatial analysis, and visualization systems.
 
-### Preparing the Environment
+The project implements a complete workflow for reading geometric data, processing polygon boundaries, and performing efficient point-in-polygon queries using computational geometry techniques.
 
-Follow instructions the [generale rules](../Rules.md) to setup what you need for the assignment. You can also install [Meshlab](http://www.meshlab.net/) to visualize the datasets (point cloud and polygons) that you will be using in this assignment.
+---
 
+## Project Overview
 
-##### File Format
+This component provides:
 
-We store point clouds as simple ASCII file in XYZ format. The file format is as follows:
+* Loading and saving 2D point clouds from `.xyz` files
+* Parsing polygon geometry from Wavefront `.obj` format
+* Bounding box computation for spatial acceleration
+* Robust segment–segment intersection testing
+* Point-in-Polygon classification using the Even–Odd Rule
+* Visualization-ready outputs for validation and analysis
+
+These algorithms are commonly used in:
+
+* Computer graphics pipelines
+* GIS and spatial analytics
+* Collision detection
+* Mesh processing
+* Rendering and visibility testing
+
+---
+
+## Input Formats
+
+### Point Cloud (.xyz)
 
 ```
-3000
-222.582 555.88 0
-226.411 535.734 0
-226.83 529.925 0
-269.326 472.13 0
-248.178 518.121 0
+N
+x y z
+x y z
 ...
 ```
 
-The first line indicates the number of points N. The following N lines contains a space-separated list of each point coordinates. Note that our case, we will ignore the 3rd coordinate when reading the data.
+Only the x and y coordinates are used for 2D computation.
 
-Polygons will be stored using a simple [OBJ file format](https://en.wikipedia.org/wiki/Wavefront_.obj_file), which is a list of points, followed (in this case) by a list of edges forming the polygon:
+### Polygon (.obj)
 
 ```
-v 115.976000 432.047000 0
-v 116.430000 529.603000 0
-v 123.848000 534.238000 0
+v x y z
+v x y z
 ...
 
-l 1 2
-l 2 3
-l 3 4
+l i j
+l j k
+...
 ```
 
-Note that indexing starts with 1 in OBJ files, so remember to shift indices accordingly.
+Vertices define polygon points, and line segments define polygon edges.
 
+---
 
+## Build & Run
 
-Ex.1: Point In Polygon [7pt]
-----------------------
-
-### Description
-
-In this exercise, the goal is to test whether a point is inside a polygon or not. This is called the [Point In Polygon](https://en.wikipedia.org/wiki/Point_in_polygon) test.
-The principle is as follows: given a point Q and a polygon P, draw a line from the query point Q to some other point far away in the plane (which should be outside P). Then, count the number of segments in P that this line intersects. This method to compute the inside/outside of a polygon is also called the even-odd rule.
-
-### Code
-
-Compile and run the code as follows:
-
-```
-mkdir build; cd build; cmake ..; make
+```bash
+mkdir build
+cd build
+cmake ..
+make
 ./assignment1
 ```
 
-### Tasks
+---
 
-1. Complete the function to read .xyz from a file. While it is perfectly fine to use C's `printf()` and `scanf()` functions in C++, the idiomatic way to read/write data is to use `std::iostream<>`, which provides additional type-safety compared to C's equivalent.
-2. Write a function to save an XYZ point cloud.
-3. Write the function to determine whether two segments intersect.
-4. Compute the bounding box of the input polygon, then find a point that is guaranteed to be outside the input polygon.
-5. Write the *Point In Polygon* function.
+## Core Algorithms
 
-### Result
+### 1. Bounding Box Generation
 
-Here is an image of the dataset provided in this assignment:
+Computes a tight axis-aligned bounding box to identify an external reference point.
 
-![](img/points.png?raw=true)
+### 2. Segment Intersection
 
-- The input `points.xyz` are shown in green.
-- The polygon in `polygon.obj` is shown in red.
-- The points from `points.xyz` which are inside `polygon.obj` are shown in yellow.
+Detects intersections between query rays and polygon edges with numerical stability.
+
+### 3. Point-In-Polygon Test
+
+Implements the Even–Odd Rule by casting a ray from the query point and counting edge intersections.
+
+---
+
+## Visualization
+
+The system highlights:
+
+* Input point cloud (green)
+* Polygon boundary (red)
+* Points inside polygon (yellow)
+
+This enables fast verification of spatial classification accuracy.
+
+---
+
+## Applications
+
+* Rendering pipelines
+* Hit-testing in 2D engines
+* Geospatial containment queries
+* Simulation boundary checks
+* Computational geometry research
+
+---
+
+## Author
+
+Developed as part of a larger **Computer Graphics Rendering Framework** focusing on geometric foundations for real-time and offline visualization systems.
+
